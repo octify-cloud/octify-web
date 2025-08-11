@@ -7,6 +7,10 @@ model User {
     createdAt        DateTime
     updatedAt        DateTime
     twoFactorEnabled Boolean?
+    role             String?
+    banned           Boolean?
+    banReason        String?
+    banExpires       DateTime?
     accounts         Account[]
     members          Member[]
     invitations      Invitation[]
