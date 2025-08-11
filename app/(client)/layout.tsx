@@ -9,10 +9,7 @@ export default async function ClientLayout({
   return (
     <>
       <Navbar />
-      <main className="flex min-h-full w-full flex-1 flex-col">
-        {children}
-        <div className="h-[200px]" />
-      </main>
+      <main className="flex min-h-full w-full flex-1 flex-col">{children}</main>
     </>
   );
 }
