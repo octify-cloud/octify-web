@@ -20,7 +20,7 @@ export default function LoginPage() {
           <Quote className="rotate-180" />
           <span className="w-fit text-center text-lg font-medium">
             Access your dedicated infrastructure and manage your services with
-            ease.
+            ease
           </span>
           <Quote className="" />
         </div>
