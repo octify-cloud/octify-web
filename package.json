@@ -12,7 +12,8 @@
     "generate": "bunx prisma generate",
     "migrate:make": "bunx prisma migrate dev --name",
     "migrate:deploy": "bunx prisma migrate deploy",
-    "migrate:reset": "bunx prisma migrate reset"
+    "migrate:reset": "bunx prisma migrate reset",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
