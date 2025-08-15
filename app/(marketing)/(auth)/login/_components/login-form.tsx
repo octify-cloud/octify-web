@@ -14,8 +14,15 @@ import { LoginSchema, loginSchema } from "@/types/schemas/client/login.schema";
 import { authClient } from "@/lib/auth/auth-client";
 
 import { sooner } from "@/utils/sooner";
+import { useSearchParams } from "next/navigation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircle2Icon } from "lucide-react";
 
 export default function LoginForm() {
+  const searchParams = useSearchParams();
+  const emailVerified = searchParams.get("email-verified") == "true";
+  const passwordReset = searchParams.get("password-reset") == "true";
+
   const [loading, startTrans] = useTransition();
   const [loadingGithub, startGitubSignup] = useTransition();
   const form = useForm({
@@ -46,18 +53,40 @@ export default function LoginForm() {
       }
     });
   };
+
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleLogin)}
         className={"flex flex-col gap-6"}
       >
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-1 text-center">
+          <img className="mb-3 w-[90px]" src={"/assets/general/logo.png"} />
           <h1 className="text-2xl font-bold">Login to your account</h1>
           <p className="text-muted-foreground text-sm text-balance">
             Enter your email below to login to your account
           </p>
         </div>
+        {emailVerified && (
+          <Alert className="border-green-500 bg-green-50 text-green-800">
+            <CheckCircle2Icon className="h-5 w-5" />
+            <AlertTitle>Email Activated!</AlertTitle>
+            <AlertDescription>
+              Your email has been successfully verified.
+            </AlertDescription>
+          </Alert>
+        )}
+        {passwordReset && (
+          <Alert className="border-green-500 bg-green-50 text-green-800">
+            <CheckCircle2Icon className="h-5 w-5" />
+            <AlertTitle>Password Reset Successful!</AlertTitle>
+            <AlertDescription>
+              Your password has been updated. You can now log in with your new
+              credentials.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid gap-6">
           <CustomFormField
             name="email"

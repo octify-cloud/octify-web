@@ -17,10 +17,6 @@ export const passwordConditionNames = [
     label: "Contains at least one special character",
     key: "hasSpecialChar",
   },
-  {
-    label: "Does not contain spaces",
-    key: "noSpaces",
-  },
 ] as const;
 
 export const validatePassword = (password: string) => {
@@ -37,7 +33,7 @@ export const validatePassword = (password: string) => {
   return { conditions, isValid };
 };
 
-const passwordSchema = z
+export const passwordSchema = z
   .string("Password is required")
   .superRefine((val, ctx) => {
     const { conditions } = validatePassword(val);

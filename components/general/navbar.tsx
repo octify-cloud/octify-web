@@ -7,8 +7,9 @@ import { Menu } from "lucide-react";
 import { navbarItems } from "@/constants/clientNavbarItems";
 import { SignedIn, SignedOut } from "./auth-components";
 import { NavUserDropdown } from "./nav-user";
-import { authClient } from "@/lib/auth/auth-client";
 import useSession from "../hooks/use-session";
+
+import GithubButton from "./github-button";
 
 function MobileOverlay() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +51,11 @@ function MobileOverlay() {
                 </Button>
               </Link>
             </SignedOut>
+            <SignedIn>
+              <Link className="w-full" href={"/dashboard"}>
+                <Button className="w-full">Dashboard</Button>
+              </Link>
+            </SignedIn>
           </div>
         </div>
       )}
@@ -59,9 +65,10 @@ function MobileOverlay() {
 
 export default function Navbar() {
   const session = useSession();
+
   return (
     <div
-      className="sticky top-0 z-40 transform"
+      className="sticky top-0 z-40"
       style={{ transform: "translate3d(0,0,999px)" }}
     >
       <div className="bg-background/90 dark:bg-background/95 absolute inset-0 h-full w-full !opacity-100 transition-opacity" />
@@ -74,7 +81,7 @@ export default function Navbar() {
                   <img
                     src={"/assets/general/octify.png"}
                     alt="Octify Logo"
-                    className="h-[40px] object-cover"
+                    className="h-[34px] object-cover"
                   />
                 </a>
               </div>
@@ -99,11 +106,26 @@ export default function Navbar() {
               </nav>
             </div>
           </div>
+
           <div className="inset-y-0 mr-2 flex items-center px-4 lg:hidden">
+            <SignedIn>
+              <NavUserDropdown
+                user={
+                  session
+                    ? {
+                        avatar: session.user.image ?? "",
+                        email: session.user.email,
+                        name: session.user.name,
+                      }
+                    : undefined
+                }
+              />
+            </SignedIn>
             <MobileOverlay />
           </div>
 
           <div className="mr-2 hidden items-center gap-4 px-4 lg:flex">
+            <GithubButton />
             <SignedOut>
               <Link href={"/login"}>
                 <Button size={"sm"} variant={"outline"}>

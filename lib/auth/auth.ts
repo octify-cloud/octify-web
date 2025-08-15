@@ -5,17 +5,50 @@ import { nextCookies } from "better-auth/next-js";
 import { organization, twoFactor, admin } from "better-auth/plugins";
 
 import axios from "axios";
+import {
+  sendPasswordResetEmail,
+  sendVerificationEmail,
+} from "../resend/send-verification-email";
 export const auth = betterAuth({
+  advanced: {
+    ipAddress: {
+      ipAddressHeaders: ["cf-connecting-ip"],
+    },
+  },
+  secret: process.env.BETTER_AUTH_SECRET,
+  rateLimit: {
+    enabled: true,
+    window: 10,
+    max: 5,
+    storage: "secondary-storage",
+    modelName: "rateLimit",
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      await sendVerificationEmail({ email: user.email, url, token });
+    },
+    sendOnSignUp: true,
+    autoSignInAfterVerification: false,
+    expiresIn: 24 * 60 * 60,
+    sendOnSignIn: true,
+  },
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+
   session: {
     cookieCache: {
-      maxAge: 5 * 60,
+      maxAge: 60 * 60 * 24 * 7,
     },
+    expiresIn: 60 * 60 * 24,
   },
+
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    async sendResetPassword({ token, url, user }, request) {
+      await sendPasswordResetEmail({ email: user.email, url, token });
+    },
   },
   socialProviders: {
     github: {

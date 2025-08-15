@@ -1,5 +1,5 @@
 "use client";
-import React, { useTransition } from "react";
+import React, { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 
@@ -20,33 +20,35 @@ import {
   registerSchema,
   validatePassword,
 } from "@/types/schemas/client/register.schema";
-import { CircleCheck, CircleX } from "lucide-react";
+import { CircleX } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PasswordStrength from "@/components/general/password-strength";
 
 export default function RegisterForm() {
+  const [emailSent, setEmailSent] = useState<boolean>(false);
   const [loadingSignup, startSignup] = useTransition();
   const [loadingGithub, startGitubSignup] = useTransition();
   const form = useForm({
     resolver: zodResolver(registerSchema),
   });
   const password = form.watch("password");
-  const { conditions } = validatePassword(password ?? "");
 
-  const handleLogin = (data: RegisterSchema) => {
+  const handleRegister = (data: RegisterSchema) => {
     startSignup(async () => {
       const res = await authClient.signUp.email({
         email: data.email,
         password: data.password,
         name: data.name,
-        callbackURL: "/",
+        callbackURL: "/login?email-verified=true",
       });
       if (res.error?.message) {
         sooner.error(res.error.message);
         return;
       }
+      setEmailSent(true);
     });
   };
-  const handleGithubLogin = () => {
+  const handleGithubRegister = () => {
     startGitubSignup(async () => {
       const data = await authClient.signIn.social({
         provider: "github",
@@ -58,13 +60,31 @@ export default function RegisterForm() {
     });
   };
 
+  if (emailSent) {
+    return (
+      <div className="flex w-full flex-col items-center gap-4">
+        <img
+          className="w-[100px]"
+          src={"/assets/register-page/open-email.png"}
+        />
+        <p className="text-center font-medium">
+          We've sent a verification email to your inbox. Please check your email
+          to complete the process.
+        </p>
+        <Link href={"/"}>
+          <Button>Back to home page</Button>
+        </Link>
+      </div>
+    );
+  }
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleLogin)}
+        onSubmit={form.handleSubmit(handleRegister)}
         className={"flex flex-col gap-6"}
       >
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-1 text-center">
+          <img className="mb-3 w-[90px]" src={"/assets/general/logo.png"} />
           <h1 className="text-2xl font-bold">Register a new account</h1>
           <p className="text-muted-foreground text-sm text-balance">
             Enter your email below to login to your account
@@ -90,43 +110,8 @@ export default function RegisterForm() {
             control={form.control}
             label="Password"
             inputType="password"
-            labelSide={
-              <Link
-                className="text-sm text-zinc-400 underline"
-                href={"/forgot-password"}
-              >
-                Forgot Password?
-              </Link>
-            }
           />
-          <div className="rounded-md p-4 ring ring-zinc-200">
-            <Label className="font-medium">Password strength</Label>
-            <hr className="my-2.5" />
-            <div className="flex flex-col gap-2">
-              {passwordConditionNames.map((e, idx) => {
-                const checked = conditions[e.key];
-                return (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "flex items-center gap-1 text-sm select-none",
-                      {
-                        "text-primary": checked,
-                        "text-destructive": !checked,
-                      },
-                    )}
-                  >
-                    {checked ? (
-                      <CircleCheck className="w-5" />
-                    ) : (
-                      <CircleX className="w-5" />
-                    )}
-                    <span>{e.label}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <PasswordStrength password={password} />
 
           <Button loading={loadingSignup} type="submit" className="w-full">
             Create account
@@ -138,7 +123,7 @@ export default function RegisterForm() {
           </div>
           <Button
             loading={loadingGithub}
-            onClick={handleGithubLogin}
+            onClick={handleGithubRegister}
             variant="outline"
             className="w-full"
           >
@@ -148,7 +133,7 @@ export default function RegisterForm() {
         </div>
         <div className="text-center text-sm">
           Have an account?{" "}
-          <Link href="/register" className="underline underline-offset-4">
+          <Link href="/login" className="underline underline-offset-4">
             Login now
           </Link>
         </div>

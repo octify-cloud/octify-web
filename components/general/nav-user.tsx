@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  BadgeCheck,
-  Bell,
-  ChevronsUpDown,
-  CreditCard,
-  LogOut,
-  Sparkles,
-} from "lucide-react";
+import { LogOut, Monitor, Moon, Sun } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -21,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth/auth-client";
 import { sooner } from "@/utils/sooner";
+import { useTheme } from "next-themes";
 
 export function NavUserDropdown({
   user,
@@ -31,6 +25,8 @@ export function NavUserDropdown({
     avatar: string;
   };
 }) {
+  const { theme, themes, setTheme } = useTheme();
+
   const handleSignout = async () => {
     sooner.loading("Please wait...");
     const res = await authClient.signOut();
@@ -43,7 +39,7 @@ export function NavUserDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-8 w-8 rounded-full">
+        <Avatar className="h-8 w-8 rounded-full border select-none">
           <AvatarImage src={user?.avatar} alt={user?.name} />
           <AvatarFallback className="rounded-full">
             {user?.name.slice(0, 2).toUpperCase() ?? ""}
@@ -57,7 +53,7 @@ export function NavUserDropdown({
       >
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <Avatar className="h-8 w-8 rounded-full">
+            <Avatar className="h-8 w-8 rounded-full select-none">
               <AvatarImage src={user?.avatar} alt={user?.name} />
               <AvatarFallback className="rounded-full">
                 {user?.name.slice(0, 2).toUpperCase() ?? ""}
@@ -70,6 +66,21 @@ export function NavUserDropdown({
           </div>
         </DropdownMenuLabel>
 
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => setTheme("light")}>
+            <Sun />
+            Light
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme("dark")}>
+            <Moon />
+            Dark
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setTheme("system")}>
+            <Monitor />
+            System
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignout}>
           <LogOut />

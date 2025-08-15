@@ -5,6 +5,7 @@ export const authRoutes: Array<String> = [
   "/register",
   "/forgot-password",
   "/reset-password",
+  "/reset-password",
   "/confirm-email",
 ];
 export const adminAuthRoutes: Array<String> = ["/admin/login"];
